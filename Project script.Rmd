@@ -1,7 +1,7 @@
 ---
-title: "Untitled"
+title: "Advanced Genomics project 3"
 author: "Gabriele Gambero"
-date: "2024-03-21"
+date: "2024-03-19"
 output: html_document
 ---
 
@@ -9,22 +9,125 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+Single cells, transcription factor factor activity proxy, and
+post-translational modifications. The activity of a transcription factor is in principle
+detectable by observing the expression level of its targets. Indeed, we usually
+assume that genes expressed similarly are often controlled by a same regulator, and
+therefore also the reverse should be true. 
+In this project, we want to introduce a proxy for a transcription factor activity based on the expression level of genes
+regulated by that transcription factor. The regulator-target relationships can be found
+in specialized databases, such as regulondb for coli, yeastract for yeast... For a
+positive regulator, its activity can be taken as being a function (linear? sigmoidal?) of
+the expression level of its targets (mean? median? max?). Now, the question is to
+show the degree at which transcription factor activities are correlated to the
+corresponding transcription factor gene expression level. Our null hypothesis is that
+indeed, the abundance of the transcript is also a proxy of the activity. This can be
+somehow expected, but plausibly not for all transcription factors. Many for instance
+are active only in phosphorylated form, meaning that the transcript can also be
+constitutively expressed; the activity will depend on phosphorylation however, and
+therefore it will be correlated to the activity of the corresponding kinase. In this way,
+one could derive a general model to relate the activity of a TF and its transcript’s
+abundance, and in case the correlation is significant, to identify those transcription
+factors significantly deviating from the general behavior.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+
+```{r}
+regul <- read.table("TF-RISet.tsv", sep = '\t', header = T)
+head(regul)
+dim(regul)
+```
+1)riId. Regulatory interaction (RI) identifier assigned by RegulonDB
+2)riType. Regulatory interaction type [tf-promoter, tf-tu, tf-gene,srna-promoter, srna-tu, srna-gene, compound-promoter, compound-tu, compound-gene]
+3)regulatorId. Transcription Factor (TF) identifier assigned by RegulonDB
+4)regulatorName. Regulator name
+5)cnfName. regulator active conformation name
+6)tfrsID. regulator regulatory site (TFRS) identifier assigned by RegulonDB
+7)tfrsLeft. TFRS left end position in the genome
+8)tfrsRight. TFRS right end position in the genome
+9)strand. DNA strand where the TFRS is located
+10)tfrsSeq. TFRS sequence (upper case)
+11)riFunction. Gene expression effect caused by the TF bound to the TFRS
+12)promoterID. Promoter Identifier assigned by RegulonDB
+13)promoterName. Promoter name
+14)tss. Transcription start site (+1) position in the genome
+15)sigmaF. Sigma Factor that recognize the promoter
+16)tfrsDistToPm. Relative distance from the center position of TFRS to the Transcription Start Site
+17)firstGene. first transcribed gene name
+18)tfrsDistTo1Gene. Relative distance from center position of TFRS to the start of first gene
+19)targetTuOrGene. Transcription unit or gene (id:name) regulated by the TF
+20)confidenceLevel. RI confidence level (Values: Confirmed, Strong, Weak)
+21)tfrsEvidence. Evidence that supports the existence of the TFRS [EvidenceCode|EvidenceType(C:confirmed S:strong W:weak)]]
+22)riEvidence. Evidence that supports the RI function [EvidenceCode|EvidenceType(C:confirmed S:strong W:weak)]
+23)addEvidence. Additive Evidence [CV(EvidenceCode1/EvidenceCodeN)|Confidence Level]
+24)riEvTech. Evidence related to the type of technology used to determine the RI
+25)riEvCategory . Evidence were categorized in classical, ht or non-experimental
+
+
+
+
+
+```{r}
+expr <- read.table("log_tpm_norm.csv", sep = ",", header = T)
+head(expr)
+dim(expr)
+```
+```{r}
+expr[1000,]
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+expr[1:5, 270:279]
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
